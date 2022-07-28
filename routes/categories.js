@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const con = require("../lib/dbConnection");
 
-// All users
+// All categories
 
 router.get("/", (req, res) => {
   try {
-    con.query("SELECT * FROM users", (err, result) => {
+    con.query("SELECT * FROM categories", (err, result) => {
       if (err) throw err;
       res.send(result);
     });
@@ -15,13 +15,13 @@ router.get("/", (req, res) => {
   }
 });
 
-// Single user
+// Single categories
 
 router.get("/:id", (req, res) => {
   id = req.params.id;
   try {
     con.query(
-      `SELECT * FROM users WHERE users.user_id = ${id}`,
+      `SELECT * FROM categories WHERE categories.category_id = ${id}`,
       (err, result) => {
         if (err) throw err;
         res.send(result);
@@ -32,23 +32,14 @@ router.get("/:id", (req, res) => {
   }
 });
 
-// Add user
+// Add category
 
 router.post("/", (req, res) => {
-  const {
-    email,
-    password,
-    full_name,
-    billing_address,
-    default_shipping_address,
-    country,
-    phone,
-    user_type,
-  } = req.body;
+  const { name, description, thumbnail } = req.body;
 
   try {
     con.query(
-      `INSERT INTO users (email,password,full_name,billing_address,default_shipping_address,country,phone,user_type) VALUES ("${email}","${password}","${full_name}","${billing_address}","${default_shipping_address}","${country}","${phone}","${user_type}")`,
+      `INSERT INTO categories (name,description,thumbnail) VALUES ("${name}","${description}","${thumbnail}")`,
       (err, result) => {
         if (err) throw err;
         res.send(result);
@@ -59,25 +50,16 @@ router.post("/", (req, res) => {
   }
 });
 
-// Edit user
+// Edit category
 
 router.put("/:id", (req, res) => {
-  const {
-    email,
-    password,
-    full_name,
-    billing_address,
-    default_shipping_address,
-    country,
-    phone,
-    user_type,
-  } = req.body;
+  const { name, description, thumbnail } = req.body;
 
   let id = req.params.id;
 
   try {
     con.query(
-      `UPDATE users SET email="${email}",password="${password}",full_name="${full_name}",billing_address="${billing_address}",default_shipping_address="${default_shipping_address}",country="${country}",phone="${phone}",user_type="${user_type}" WHERE users.user_id = "${id}"`,
+      `UPDATE categories SET name="${name}",description="${description}",thumbnail="${thumbnail}" WHERE categories.category_id = "${id}"`,
       (err, result) => {
         if (err) throw err;
         res.send(result);
@@ -88,14 +70,14 @@ router.put("/:id", (req, res) => {
   }
 });
 
-// Delete user
+// Delete category
 
 router.delete("/:id", (req, res) => {
   let id = req.params.id;
 
   try {
     con.query(
-      `DELETE FROM users WHERE users.user_id = "${id}"`,
+      `DELETE FROM categories WHERE categories.category_id = "${id}"`,
       (err, result) => {
         if (err) throw err;
         res.send(result);

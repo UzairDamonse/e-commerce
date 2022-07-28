@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const con = require("../lib/dbConnection");
 
-// All users
+// All orders
 
 router.get("/", (req, res) => {
   try {
-    con.query("SELECT * FROM users", (err, result) => {
+    con.query("SELECT * FROM orders", (err, result) => {
       if (err) throw err;
       res.send(result);
     });
@@ -15,13 +15,13 @@ router.get("/", (req, res) => {
   }
 });
 
-// Single user
+// Single orders
 
 router.get("/:id", (req, res) => {
   id = req.params.id;
   try {
     con.query(
-      `SELECT * FROM users WHERE users.user_id = ${id}`,
+      `SELECT * FROM orders WHERE orders.order_id = ${id}`,
       (err, result) => {
         if (err) throw err;
         res.send(result);
@@ -32,23 +32,17 @@ router.get("/:id", (req, res) => {
   }
 });
 
-// Add user
+// Add orders
 
 router.post("/", (req, res) => {
-  const {
-    email,
-    password,
-    full_name,
-    billing_address,
-    default_shipping_address,
-    country,
-    phone,
-    user_type,
-  } = req.body;
+  const { user_id, amount, shipping_address, order_email, order_status } =
+    req.body;
+
+  const order_date = new Date().toISOString().slice(0, 19).replace("T", " ");
 
   try {
     con.query(
-      `INSERT INTO users (email,password,full_name,billing_address,default_shipping_address,country,phone,user_type) VALUES ("${email}","${password}","${full_name}","${billing_address}","${default_shipping_address}","${country}","${phone}","${user_type}")`,
+      `INSERT INTO orders (user_id,amount,shipping_address,order_email,order_date,order_status) VALUES ("${user_id}","${amount}","${shipping_address}","${order_email}","${order_date}","${order_status}")`,
       (err, result) => {
         if (err) throw err;
         res.send(result);
@@ -59,25 +53,19 @@ router.post("/", (req, res) => {
   }
 });
 
-// Edit user
+// Edit orders
 
 router.put("/:id", (req, res) => {
-  const {
-    email,
-    password,
-    full_name,
-    billing_address,
-    default_shipping_address,
-    country,
-    phone,
-    user_type,
-  } = req.body;
+  const { user_id, amount, shipping_address, order_email, order_status } =
+    req.body;
+
+  const order_date = new Date().toISOString().slice(0, 19).replace("T", " ");
 
   let id = req.params.id;
 
   try {
     con.query(
-      `UPDATE users SET email="${email}",password="${password}",full_name="${full_name}",billing_address="${billing_address}",default_shipping_address="${default_shipping_address}",country="${country}",phone="${phone}",user_type="${user_type}" WHERE users.user_id = "${id}"`,
+      `UPDATE orders SET user_id="${user_id}",amount="${amount}",shipping_address="${shipping_address}",order_email="${order_email}",order_date="${order_date}",order_status="${order_status}" WHERE order_id = "${id}"`,
       (err, result) => {
         if (err) throw err;
         res.send(result);
@@ -88,14 +76,14 @@ router.put("/:id", (req, res) => {
   }
 });
 
-// Delete user
+// Delete order
 
 router.delete("/:id", (req, res) => {
   let id = req.params.id;
 
   try {
     con.query(
-      `DELETE FROM users WHERE users.user_id = "${id}"`,
+      `DELETE FROM orders WHERE orders.order_id = "${id}"`,
       (err, result) => {
         if (err) throw err;
         res.send(result);
