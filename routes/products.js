@@ -37,7 +37,8 @@ router.get("/:id", (req, res) => {
 // Add product
 
 router.post("/", middleware, (req, res) => {
-  if (req.users.user_type === "admin") {
+  console.log(req.user);
+  if (req.user.user_type === "admin") {
     const {
       sku,
       name,
@@ -106,7 +107,7 @@ router.put("/:id", middleware, (req, res) => {
 
 // Delete products
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", middleware, (req, res) => {
   if (req.users.user_type === "admin") {
     let id = req.params.id;
 

@@ -36,57 +36,69 @@ router.get("/:id", (req, res) => {
 
 // Add category
 
-router.post("/", (req, res) => {
-  const { name, description, thumbnail } = req.body;
+router.post("/", middleware, (req, res) => {
+  if (req.users.user_type === "admin") {
+    const { name, description, thumbnail } = req.body;
 
-  try {
-    con.query(
-      `INSERT INTO categories (name,description,thumbnail) VALUES ("${name}","${description}","${thumbnail}")`,
-      (err, result) => {
-        if (err) throw err;
-        res.send(result);
-      }
-    );
-  } catch (error) {
-    console.log(error);
+    try {
+      con.query(
+        `INSERT INTO categories (name,description,thumbnail) VALUES ("${name}","${description}","${thumbnail}")`,
+        (err, result) => {
+          if (err) throw err;
+          res.send(result);
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    res.send("Not valid user");
   }
 });
 
 // Edit category
 
-router.put("/:id", (req, res) => {
-  const { name, description, thumbnail } = req.body;
+router.put("/:id", middleware, (req, res) => {
+  if (req.users.user_type === "admin") {
+    const { name, description, thumbnail } = req.body;
 
-  let id = req.params.id;
+    let id = req.params.id;
 
-  try {
-    con.query(
-      `UPDATE categories SET name="${name}",description="${description}",thumbnail="${thumbnail}" WHERE categories.category_id = "${id}"`,
-      (err, result) => {
-        if (err) throw err;
-        res.send(result);
-      }
-    );
-  } catch (error) {
-    console.log(error);
+    try {
+      con.query(
+        `UPDATE categories SET name="${name}",description="${description}",thumbnail="${thumbnail}" WHERE categories.category_id = "${id}"`,
+        (err, result) => {
+          if (err) throw err;
+          res.send(result);
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    res.send("Not valid user");
   }
 });
 
 // Delete category
 
-router.delete("/:id", (req, res) => {
-  let id = req.params.id;
+router.delete("/:id", middleware, (req, res) => {
+  if (req.users.user_type === "admin") {
+    let id = req.params.id;
 
-  try {
-    con.query(
-      `DELETE FROM categories WHERE categories.category_id = "${id}"`,
-      (err, result) => {
-        if (err) throw err;
-        res.send(result);
-      }
-    );
-  } catch (error) {
-    console.log(error);
+    try {
+      con.query(
+        `DELETE FROM categories WHERE categories.category_id = "${id}"`,
+        (err, result) => {
+          if (err) throw err;
+          res.send(result);
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    res.send("Not valid user");
   }
 });
 

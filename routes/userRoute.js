@@ -63,31 +63,53 @@ router.post("/", (req, res) => {
 
 // Edit user
 
-router.put("/:id", (req, res) => {
-  const {
-    email,
-    password,
-    full_name,
-    billing_address,
-    default_shipping_address,
-    country,
-    phone,
-    user_type,
-  } = req.body;
+router.put("/", middleware, (req, res) => {
+  // Sql Check if the email is in the database
 
-  let id = req.params.id;
+  let sql = "SELECT * FROM users WHERE ?";
+  const id = {
+    user_id: req.user.user_id,
+  };
 
-  try {
-    con.query(
-      `UPDATE users SET email="${email}",password="${password}",full_name="${full_name}",billing_address="${billing_address}",default_shipping_address="${default_shipping_address}",country="${country}",phone="${phone}",user_type="${user_type}" WHERE users.user_id = "${id}"`,
-      (err, result) => {
+  // Connect and get results
+  con.query(sql, id, (err, result) => {
+    if (err) throw err;
+
+    if (result.length === 0) {
+      res.send("User not found");
+    } else {
+      let updateSql = `UPDATE users SET ? WHERE user_id = ${req.user.user_id}`;
+      const {
+        email,
+        password,
+        full_name,
+        billing_address,
+        default_shipping_address,
+        country,
+        phone,
+        user_type,
+      } = req.body;
+      console.log(email);
+
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(password, salt);
+
+      let user = {
+        email,
+        password: hash,
+        full_name,
+        billing_address,
+        default_shipping_address,
+        country,
+        phone,
+        user_type,
+      };
+      con.query(updateSql, user, (err, result) => {
         if (err) throw err;
         res.send(result);
-      }
-    );
-  } catch (error) {
-    console.log(error);
-  }
+      });
+    }
+  });
 });
 
 // Delete user
@@ -172,8 +194,8 @@ router.post("/login", (req, res) => {
           req.body.password,
           result[0].password
         );
-        console.log(req.body.password, result[0].password);
-        console.log(isMatch);
+        // console.log(req.body.password, result[0].password);
+        // console.log(isMatch);
         if (!isMatch) {
           res.send("Password incorrect");
         } else {
