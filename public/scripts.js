@@ -4,7 +4,7 @@ let users = [];
 const prodContainer = document.getElementById("products");
 const userContainer = document.getElementById("users");
 
-fetch("http://localhost:6969/products")
+fetch("https://uzairs-e-commerce.herokuapp.com/products")
   .then((res) => res.json())
   .then((data) => {
     items = data;
@@ -34,7 +34,7 @@ function showItems(products) {
   });
 }
 
-fetch("http://localhost:6969/users")
+fetch("https://uzairs-e-commerce.herokuapp.com/users")
   .then((res) => res.json())
   .then((data) => {
     users = data;
